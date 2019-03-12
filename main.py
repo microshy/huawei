@@ -23,17 +23,25 @@ def main():
         road_list.append_raw(item)
     cross_list = cross_node.cross_list()
     for item in cross_data:
-        cross_list.append_raw(item, road_list)
+        cross_list.append_raw(item)
     print('initialization complete!')
     #2 将路径规划内容导入汽车节点
     '''
     路径规划相关暂不考虑，假定现在car_node中的出发地和终点即为规划中的一步
     route_data = data_io.data_input_from_file('SDK/SDK/SDK/SDK_python/CodeCraft-2019/config/answer.txt')
     '''
+    cross_list.link(road_list)
+    car_wait_list.link(road_list)
     #3 开始调度
     print('start schedule...')
+    set_time = 0
     while(car_run_list.head or car_wait_list.head):
-        scheduler.scheduler(car_run_list, car_wait_list, road_list, cross_list)
+        print('set_time =', set_time)
+        scheduler.schedule_running_cars(car_run_list, road_list, cross_list, set_time)
+        set_time += 1
+        scheduler.schedule_waiting_cars(car_run_list, car_wait_list, road_list, cross_list, set_time)
+        if set_time == 3:
+            break
     print('schedule complete!')
 
 if __name__ == '__main__':

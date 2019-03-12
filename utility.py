@@ -61,8 +61,24 @@ print(car_run_list.head.car_next)
 print(car_wait_list.head)
 print(car_wait_list.head.car_next)
 '''
-
+'''测试schedule的退出是否正常
+if car_run_list.head:
+    print(car_run_list.head.id)
+    car_run_list.remove(car_run_list.head.id)
+else:
+    print('no car')
+    
+if car_wait_list.head:
+    cur = car_wait_list.head
+    car_wait_list.remove(car_wait_list.head.id)
+    car_run_list.append(cur)
+    print(car_run_list.head.id)
+else:
+    print('no car')
+'''
 '''其他
+cur.channel_ptr.position = min(cur.channel_ptr.position, cur.position)
+
 def auto_name():
     basic = road_data[0][0]
     print(basic)

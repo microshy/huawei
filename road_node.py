@@ -24,7 +24,7 @@ class road_node(object):
         if self.is_channel_empty():
             for i in range(self.channel):
                 channelx = channel_node.channel_node(i+1, self.length)
-                if not self.channel_ptr:
+                if self.channel_ptr == None:
                     self.channel_ptr = channelx
                 else:
                     cur = self.channel_ptr
@@ -45,7 +45,7 @@ class road_node(object):
             if cur.id == id:
                 return cur
             cur = cur.channel_next
-        return False
+
 
 class road_list(object):
     #初始化
@@ -129,4 +129,4 @@ class road_list(object):
             if cur.id == id:
                 return cur
             cur = cur.road_next
-        return False
+

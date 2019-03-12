@@ -14,7 +14,7 @@ class cross_node(object):
         self.road_south = None
         self.road_west = None
     #连接路口与道路
-    def links(self, road_list):
+    def link(self, road_list):
         self.road_north = road_list.search(self.north) if self.north != 0 else None
         self.road_east = road_list.search(self.east) if self.east != 0 else None
         self.road_south = road_list.search(self.south) if self.south != 0 else None
@@ -43,9 +43,8 @@ class cross_list(object):
             cur = cur.cross_next
         print('')
     #添加原始数组进入队列，初始化时使用
-    def append_raw(self, item, road_list):
+    def append_raw(self, item):
         node = cross_node(item)
-        node.links(road_list)
         if self.is_empty():
             self.head = node
         else:
@@ -54,8 +53,7 @@ class cross_list(object):
                 cur = cur.cross_next
             cur.cross_next = node
     #添加节点至队尾
-    def append(self, node, road_list):
-        node.links(road_list)
+    def append(self, node):
         node.cross_next = None
         if self.is_empty():
             self.head = node
@@ -65,14 +63,13 @@ class cross_list(object):
                 cur = cur.cross_next
             cur.cross_next = node
     #插入节点
-    def insert(self, pos, node, road_list):
-        node.links(road_list)
+    def insert(self, pos, node):
         if pos <= 0:
             cur = self.head
             self.head = node
             node.cross_next = cur
         elif pos > (self.length() - 1):
-            self.append(node, road_list)
+            self.append(node)
         else:
             pre = self.head
             count = 0
@@ -103,3 +100,9 @@ class cross_list(object):
                 return cur
             cur = cur.cross_next
         return False
+    # 添加连接路径
+    def link(self, road_list):
+        cur = self.head
+        while cur != None:
+            cur.link(road_list)
+            cur = cur.cross_next

@@ -2,19 +2,31 @@ class car_node(object):
     def __init__(self, data):
         #oringin info
         self.id = data[0]   #car id
-        self.leave = data[1]    #departure
-        self.arrive = data[2]   #destination
-        self.speed = data[3]    #highest speed
-        self.begin_time = data[4]   #time set to start moving
+        self.leave = 5000  #data[1]    #departure
+        self.arrive = 5001  #data[2]   #destination
+        self.speed = 5  #data[3]    #highest speed
+        self.set_time = 2  #data[4]   #time set to start moving
         #info need
-        self.position = 0   #position to move to
-        self.position_now = 0   #at the position on channel now
-        self.channel = 0    #channel to switch to
-        self.channel_now = 0    #on the channel on road now
+        self.position = 0   #at the position on channel now
+        self.channel = 0    #on the channel on road now
         self.speed_now = 0  #speed to move now
-        #pointer need
-        self.update_next = None #pointer to the next car_node in car_run_list
-        self.car_next = None    #pointer to the following car_node in the same cahnnel on road
+        self.on_road = 0  #1 means on road while 0 refers to in garage
+        self.vruntime = 0  #vitural running time
+        self.dir = 0  # straight 1 turn left 2 turn right 3
+        self.time_out = 0
+        self.nowhere = 0
+        # #pointer need
+        self.from_ptr = None
+        self.to_ptr = None
+        self.car_next = None    #pointer to the next car_node in car_run_list
+        self.channel_ptr = None
+        self.next_car_on_channel = None
+        self.prev_car_on_channel = None
+
+    def link(self, road_list):
+        self.from_ptr = road_list.search(self.leave)
+        self.to_ptr = road_list.search(self.arrive)
+
 
 class car_list(object):
     #初始化
@@ -96,3 +108,9 @@ class car_list(object):
                 return cur
             cur = cur.car_next
         return False
+    #添加连接路径
+    def link(self, road_list):
+        cur = self.head
+        while cur != None:
+            cur.link(road_list)
+            cur = cur.car_next
