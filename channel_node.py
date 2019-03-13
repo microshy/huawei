@@ -12,7 +12,7 @@ class channel_node(object):
     # 判断线路指针是否为空
     def is_car_empty(self):
         return self.car_ptr == None
-    # 向道路节点添加线路节点
+    # 向channel节点添加car节点
     def append_car(self, car_node):
         car_node.next_car_on_channel = None
         if self.is_car_empty():
@@ -24,19 +24,35 @@ class channel_node(object):
                 cur = cur.next_car_on_channel
             car_node.prev_car_on_channel = cur
             cur.next_car_on_channel = car_node
-    # 遍历道路的channel
+    # 遍历channel的car
     def travel_car(self):
         cur = self.car_ptr
         while cur != None:
             print(cur.id, '')
             cur = cur.next_car_on_channel
         print('')
-    # 搜索是否有线路节点，若有就返回该节点
-    def search_channel(self, id):
+    # 搜索是否有car节点，若有就返回该节点
+    def search_car(self, id):
         cur = self.car_ptr
         while cur != None:
             if cur.id == id:
                 return cur
             cur = cur.next_car_on_channel
-
+    # 移除car节点
+    def remove_car(self, car_node):
+        cur = self.car_ptr
+        while cur:
+            if cur != car_node:
+                cur = cur.next_car_on_channel
+            else:
+                pre = cur.prev_car_on_channel
+                if pre == None:
+                    self.car_ptr = cur.next_car_on_channel
+                    cur.next_car_on_channel.prev_car_on_channel = None
+                else:
+                    pre.next_car_on_channel = cur.next_car_on_channel
+                    cur.next_car_on_channel.prev_car_on_channel = pre
+                cur.next_car_on_channel = None
+                cur.prev_car_on_channel = None
+                break
 
