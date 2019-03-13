@@ -29,6 +29,7 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
         cur = car_run_list.head
         #遍历list，移动所有能运动的车
         while cur != None:
+            #若车已经到位，移除出run_list
             #若车的运行时间未耗尽
             if cur.time_out == 0:
                 #重置nowhere标志位
@@ -103,11 +104,12 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
                                     #若在新channel上的可行驶距离小于切换后可行驶的最大距离，更新vruntime，position以及置位标志位nowhere
                                     if cur.prev_car_on_channel.position - 1 < dis_after_switch:
                                         cur.vruntime = cur.vruntime + vruntime_before_switch + vruntime_after_switch
+                                        print(cur.vruntime, vruntime_before_switch, vruntime_after_switch)
                                         cur.position = cur.prev_car_on_channel.position - 1
                                         cur.nowhere = 1
                                     #若可行驶距离大于最大距离，则更新相关信息
                                     else:
-                                        cur.vruntime = cur.vruntime + dis_after_switch / cur.speed_now * speed_mul
+                                        cur.vruntime = cur.vruntime + vruntime_before_switch + dis_after_switch / cur.speed_now * speed_mul
                                         cur.position = dis_after_switch
                                         cur.time_out = 1
                             #若是第一辆车
@@ -130,7 +132,7 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
                                     cur.channel = channel_switch.id
                                     cur.speed_now = min(cur.speed_now, channel_switch.speed)
                                     #默认路长大于车速
-                                    cur.vruntime = cur.vruntime + dis_after_switch / cur.speed_now * speed_mul
+                                    cur.vruntime = cur.vruntime + vruntime_before_switch + dis_after_switch / cur.speed_now * speed_mul
                                     cur.position = dis_after_switch
                                     cur.time_out = 1
                 #若当前车辆是当前channel最后一辆车，则更新channel的position，speed信息

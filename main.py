@@ -37,11 +37,12 @@ def main():
     set_time = 0
     while(car_run_list.head or car_wait_list.head):
         print('set_time =', set_time)
+        if set_time == 6:
+            break
         scheduler.schedule_running_cars(car_run_list, road_list, cross_list, set_time)
         set_time += 1
         scheduler.schedule_waiting_cars(car_run_list, car_wait_list, road_list, cross_list, set_time)
-        if set_time == 4:
-            break
+
     print('schedule complete!')
 
 if __name__ == '__main__':

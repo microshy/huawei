@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="399ed3b1-6e9c-4071-8547-5bc497365e87" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SDK/SDK/SDK/SDK_python/CodeCraft-2019/config/car.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SDK/SDK/SDK/SDK_python/CodeCraft-2019/config/car.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SDK/~$19华为软件精英挑战赛-初赛-任务书-v1.0.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/car_node.py" beforeDir="false" afterPath="$PROJECT_DIR$/car_node.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/channel_node.py" beforeDir="false" afterPath="$PROJECT_DIR$/channel_node.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler.py" afterDir="false" />
     </list>
@@ -21,8 +16,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="882">
-              <caret line="42" column="24" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
+            <state relative-caret-position="335">
+              <caret line="40" column="17" lean-forward="true" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -33,9 +28,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scheduler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-970">
-              <caret line="74" column="33" selection-start-line="74" selection-start-column="33" selection-end-line="74" selection-end-column="33" />
+            <state relative-caret-position="173">
+              <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
               <folding>
+                <element signature="e#947#8163#0" />
+                <element signature="e#2163#7788#0" />
+                <element signature="e#8226#8275#0" />
                 <element signature="e#6149#6546#0" />
                 <element signature="e#4595#4960#0" />
               </folding>
@@ -132,9 +130,9 @@
         <option value="$PROJECT_DIR$/road_node.py" />
         <option value="$PROJECT_DIR$/utility.py" />
         <option value="$PROJECT_DIR$/channel_node.py" />
-        <option value="$PROJECT_DIR$/scheduler.py" />
         <option value="$PROJECT_DIR$/car_node.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/scheduler.py" />
       </list>
     </option>
   </component>
@@ -388,8 +386,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="42" column="24" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
+        <state relative-caret-position="335">
+          <caret line="40" column="17" lean-forward="true" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
@@ -398,9 +396,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scheduler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-970">
-          <caret line="74" column="33" selection-start-line="74" selection-start-column="33" selection-end-line="74" selection-end-column="33" />
+        <state relative-caret-position="173">
+          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
           <folding>
+            <element signature="e#947#8163#0" />
+            <element signature="e#2163#7788#0" />
+            <element signature="e#8226#8275#0" />
             <element signature="e#6149#6546#0" />
             <element signature="e#4595#4960#0" />
           </folding>
