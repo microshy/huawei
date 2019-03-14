@@ -26,6 +26,13 @@ class car_node(object):
     def link(self, road_list):
         self.from_ptr = road_list.search(self.leave)
         self.to_ptr = road_list.search(self.arrive)
+    def is_on_dest_road(self):
+        cur_channel = self.to_ptr.channel_ptr
+        while cur_channel:
+            if cur_channel == self.channel_ptr:
+                return 1
+            else:
+                return 0
 
 
 class car_list(object):

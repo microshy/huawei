@@ -46,9 +46,12 @@ class channel_node(object):
                 cur = cur.next_car_on_channel
             else:
                 pre = cur.prev_car_on_channel
-                if pre == None:
+                after = cur.next_car_on_channel
+                if pre == None and after != None:
                     self.car_ptr = cur.next_car_on_channel
                     cur.next_car_on_channel.prev_car_on_channel = None
+                elif after == None:
+                    self.car_ptr = None
                 else:
                     pre.next_car_on_channel = cur.next_car_on_channel
                     cur.next_car_on_channel.prev_car_on_channel = pre

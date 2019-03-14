@@ -30,12 +30,24 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
         #遍历list，移动所有能运动的车
         while cur != None:
             #若车已经到位，移除出run_list
+            cur_channel = cur.to_ptr.channel_ptr
+            while cur_channel:
+                if cur_channel == cur.channel_ptr:
+                    if cur.position == cur.to_ptr.length:
+                        car_run_list.remove(cur.id)
+                        temp = cur.next_car_on_channel
+                        cur.channel_ptr.remove_car(cur)
+                        cur = temp
+                    break
+                else:
+                    cur_channel = cur_channel.channel_next
+            if cur == None:
+                break
             #若车的运行时间未耗尽
             if cur.time_out == 0:
                 #重置nowhere标志位
                 cur.nowhere = 0
                 #若不是channel上为第一辆车
-                #if cur.channel_ptr.car_ptr != cur:
                 if cur.prev_car_on_channel != None:
                     #计算到前车的距离
                     dis_prev_car = cur.prev_car_on_channel.position - cur.position
@@ -57,84 +69,95 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
                 #若是channel上为第一辆车
                 else:
                     #移动最大距离dis_max
-                    dis_max = cur.position + cur.speed_now
-                    #最大可移动距离是否超出道路
-                    #若未超出，更新虚拟运行时间vruntime，当前位置position，时间耗尽标志位time_out
-                    if dis_max <= cur.from_ptr.length:
-                        cur.vruntime = cur.vruntime + cur.speed_now / speed * speed_mul
-                        cur.position = cur.position + cur.speed_now
-                        cur.time_out = 1
-                    #若已超出，记录切换road之前进过多少距离，所花费的vruntime
-                    else:
-                        dis_before_switch = cur.from_ptr.length - cur.position
-                        vruntime_before_switch = dis_before_switch / speed * speed_mul
-                        #选择目标road上可进入的channel，根据channel中最后一辆车的postition判断是否还有位置
-                        channel_switch = cur.to_ptr.channel_ptr
-                        while channel_switch != None:
-                            if channel_switch.position < 1:
-                                channel_switch = channel_switch.channel_next
-                            else:
-                                break
-                        #若没有可用的channel，更新vruntime和position，并将无处移动标志位nowhere置位
-                        if channel_switch == None:
-                            cur.vruntime = cur.vruntime + vruntime_before_switch
-                            cur.position = cur.from_ptr.length
+                    if cur.is_on_dest_road():
+                        dis_max = min(cur.to_ptr.length, cur.position + cur.speed_now)
+                        cur.vruntime = cur.vruntime + dis_max - cur.position / speed * speed_mul
+                        cur.position = dis_max
+                        if dis_max == cur.to_ptr.length:
                             cur.nowhere = 1
-                        #若有可用channel，计算在该channel上能移动的距离dis_after_switch
                         else:
-                            #若不是第一辆车
-                            if cur.prev_car_on_channel != None:
-                                dis_after_switch = channel_switch.speed - dis_before_switch
-                                #若dis_after_switch小于0，则说明不能通过路口，情况同没有channel可用一样
-                                if dis_after_switch <= 0:
-                                    cur.vruntime = cur.vruntime + vruntime_before_switch
-                                    cur.position = cur.from_ptr.length
-                                    cur.nowhere = 1
-                                #若dis_after_switch大于0，则说明可以通过路口
+                            cur.time_out = 1
+                    else:
+                        dis_max = cur.position + cur.speed_now
+                        #最大可移动距离是否超出道路
+                        #若未超出，更新虚拟运行时间vruntime，当前位置position，时间耗尽标志位time_out
+                        if dis_max <= cur.from_ptr.length:
+                            cur.vruntime = cur.vruntime + cur.speed_now / speed * speed_mul
+                            cur.position = cur.position + cur.speed_now
+                            cur.time_out = 1
+                        #若已超出，记录切换road之前进过多少距离，所花费的vruntime
+                        else:
+                            dis_before_switch = cur.from_ptr.length - cur.position
+                            vruntime_before_switch = dis_before_switch / speed * speed_mul
+                            #选择目标road上可进入的channel，根据channel中最后一辆车的postition判断是否还有位置
+                            channel_switch = cur.to_ptr.channel_ptr
+                            while channel_switch != None:
+                                if channel_switch.position < 1:
+                                    channel_switch = channel_switch.channel_next
                                 else:
-                                    #将当前车从当前channel移动到切换的channel中
-                                    cur.channel_ptr.remove_car(cur)
-                                    channel_switch.append_car(cur)
-                                    #初始化车的位置，channel以及speed信息
-                                    cur.position = 1
-                                    cur.channel = channel_switch.id
-                                    cur.speed_now = min(cur.speed_now, channel_switch.speed)
-                                    #切换channel后到运行到前车后方行驶的vruntime
-                                    vruntime_after_switch = (cur.prev_car_on_channel.position - 1) / cur.speed_now * speed_mul
-                                    #若在新channel上的可行驶距离小于切换后可行驶的最大距离，更新vruntime，position以及置位标志位nowhere
-                                    if cur.prev_car_on_channel.position - 1 < dis_after_switch:
-                                        cur.vruntime = cur.vruntime + vruntime_before_switch + vruntime_after_switch
-                                        print(cur.vruntime, vruntime_before_switch, vruntime_after_switch)
-                                        cur.position = cur.prev_car_on_channel.position - 1
+                                    break
+                            #若没有可用的channel，更新vruntime和position，并将无处移动标志位nowhere置位
+                            if channel_switch == None:
+                                cur.vruntime = cur.vruntime + vruntime_before_switch
+                                cur.position = cur.from_ptr.length
+                                cur.nowhere = 1
+                            #若有可用channel，计算在该channel上能移动的距离dis_after_switch
+                            else:
+                                #若不是第一辆车
+                                if cur.prev_car_on_channel != None:
+                                    dis_after_switch = channel_switch.speed - dis_before_switch
+                                    #若dis_after_switch小于0，则说明不能通过路口，情况同没有channel可用一样
+                                    if dis_after_switch <= 0:
+                                        cur.vruntime = cur.vruntime + vruntime_before_switch
+                                        cur.position = cur.from_ptr.length
                                         cur.nowhere = 1
-                                    #若可行驶距离大于最大距离，则更新相关信息
+                                    #若dis_after_switch大于0，则说明可以通过路口
                                     else:
+                                        #将当前车从当前channel移动到切换的channel中
+                                        cur.channel_ptr.remove_car(cur)
+                                        channel_switch.append_car(cur)
+                                        #初始化车的位置，channel以及speed信息
+                                        cur.channel_ptr = channel_switch
+                                        cur.position = 1
+                                        cur.channel = channel_switch.id
+                                        cur.speed_now = min(cur.speed_now, channel_switch.speed)
+                                        #切换channel后到运行到前车后方行驶的vruntime
+                                        vruntime_after_switch = (cur.prev_car_on_channel.position - 1) / cur.speed_now * speed_mul
+                                        #若在新channel上的可行驶距离小于切换后可行驶的最大距离，更新vruntime，position以及置位标志位nowhere
+                                        if cur.prev_car_on_channel.position - 1 < dis_after_switch:
+                                            cur.vruntime = cur.vruntime + vruntime_before_switch + vruntime_after_switch
+                                            print(cur.vruntime, vruntime_before_switch, vruntime_after_switch)
+                                            cur.position = cur.prev_car_on_channel.position - 1
+                                            cur.nowhere = 1
+                                        #若可行驶距离大于最大距离，则更新相关信息
+                                        else:
+                                            cur.vruntime = cur.vruntime + vruntime_before_switch + dis_after_switch / cur.speed_now * speed_mul
+                                            cur.position = dis_after_switch
+                                            cur.time_out = 1
+                                #若是第一辆车
+                                else:
+                                    channel_switch.speed = min(cur.speed, channel_switch.speed)
+                                    cur.speed_now = channel_switch.speed
+                                    dis_after_switch = channel_switch.speed - dis_before_switch
+                                    # 若dis_after_switch小于0，则说明不能通过路口，情况同没有channel可用一样
+                                    if dis_after_switch <= 0:
+                                        cur.vruntime = cur.vruntime + vruntime_before_switch
+                                        cur.position = cur.from_ptr.length
+                                        cur.nowhere = 1
+                                    # 若dis_after_switch大于0，则说明可以通过路口
+                                    else:
+                                        # 将当前车从当前channel移动到切换的channel中
+                                        cur.channel_ptr.remove_car(cur)
+                                        channel_switch.append_car(cur)
+                                        # 初始化车的位置，channel以及speed信息
+                                        cur.channel_ptr = channel_switch
+                                        cur.position = 1
+                                        cur.channel = channel_switch.id
+                                        cur.speed_now = min(cur.speed_now, channel_switch.speed)
+                                        #默认路长大于车速
                                         cur.vruntime = cur.vruntime + vruntime_before_switch + dis_after_switch / cur.speed_now * speed_mul
                                         cur.position = dis_after_switch
                                         cur.time_out = 1
-                            #若是第一辆车
-                            else:
-                                channel_switch.speed = min(cur.speed, channel_switch.speed)
-                                cur.speed_now = channel_switch.speed
-                                dis_after_switch = channel_switch.speed - dis_before_switch
-                                # 若dis_after_switch小于0，则说明不能通过路口，情况同没有channel可用一样
-                                if dis_after_switch <= 0:
-                                    cur.vruntime = cur.vruntime + vruntime_before_switch
-                                    cur.position = cur.from_ptr.length
-                                    cur.nowhere = 1
-                                # 若dis_after_switch大于0，则说明可以通过路口
-                                else:
-                                    # 将当前车从当前channel移动到切换的channel中
-                                    cur.channel_ptr.remove_car(cur)
-                                    channel_switch.append_car(cur)
-                                    # 初始化车的位置，channel以及speed信息
-                                    cur.position = 1
-                                    cur.channel = channel_switch.id
-                                    cur.speed_now = min(cur.speed_now, channel_switch.speed)
-                                    #默认路长大于车速
-                                    cur.vruntime = cur.vruntime + vruntime_before_switch + dis_after_switch / cur.speed_now * speed_mul
-                                    cur.position = dis_after_switch
-                                    cur.time_out = 1
                 #若当前车辆是当前channel最后一辆车，则更新channel的position，speed信息
                 if cur.next_car_on_channel == None:
                     cur.channel_ptr.position = cur.position
@@ -143,7 +166,6 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
                 schedule_flag = (schedule_flag and cur.nowhere)
             #若运行时间耗尽，直接下一辆车
             else:
-                #切换到list中的下一辆车
                 cur = cur.car_next
         #若schedule_flag为1，说明所有车都无法再继续移动（时间耗尽或者无处移动）
         if schedule_flag:
@@ -183,7 +205,7 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
         if cur == None:
             print('no car', ' ')
         while cur != None:
-            print(cur.id, cur.position, cur.vruntime)
+            print(cur.id, cur.position, cur.vruntime, cur.channel_ptr, cur.prev_car_on_channel, cur)
             cur = cur.car_next
         print('running...')
         cur = in_gara_car_list.head
