@@ -76,6 +76,26 @@ if car_wait_list.head:
 else:
     print('no car')
 '''
+'''
+#若车已经到位，移除出run_list
+cur_channel = cur.to_ptr.channel_ptr
+while cur_channel:
+    if cur_channel == cur.channel_ptr:
+        if cur.position == cur.to_ptr.length:
+            #时间耗尽的默认不进车库，不然进车库
+            if not cur.time_out:
+                break
+            else:
+                car_run_list.remove(cur.id)
+                temp = cur.next_car_on_channel
+                cur.channel_ptr.remove_car(cur)
+                cur = temp
+        break
+    else:
+        cur_channel = cur_channel.channel_next
+if cur == None:
+    break
+'''
 '''其他
 cur.channel_ptr.position = min(cur.channel_ptr.position, cur.position)
 

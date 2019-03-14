@@ -29,20 +29,6 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
         cur = car_run_list.head
         #遍历list，移动所有能运动的车
         while cur != None:
-            #若车已经到位，移除出run_list
-            cur_channel = cur.to_ptr.channel_ptr
-            while cur_channel:
-                if cur_channel == cur.channel_ptr:
-                    if cur.position == cur.to_ptr.length:
-                        car_run_list.remove(cur.id)
-                        temp = cur.next_car_on_channel
-                        cur.channel_ptr.remove_car(cur)
-                        cur = temp
-                    break
-                else:
-                    cur_channel = cur_channel.channel_next
-            if cur == None:
-                break
             #若车的运行时间未耗尽
             if cur.time_out == 0:
                 #重置nowhere标志位
@@ -68,27 +54,35 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
                             cur.time_out = 1
                 #若是channel上为第一辆车
                 else:
-                    #移动最大距离dis_max
+                    #若在目的道路上
                     if cur.is_on_dest_road():
-                        dis_max = min(cur.to_ptr.length, cur.position + cur.speed_now)
-                        cur.vruntime = cur.vruntime + dis_max - cur.position / speed * speed_mul
-                        cur.position = dis_max
-                        if dis_max == cur.to_ptr.length:
-                            cur.nowhere = 1
+                        #若可移动距离超过上限，认为入库
+                        if cur.position + cur.speed_now > cur.to_ptr.length:
+                            car_run_list.remove(cur.id)
+                            temp = cur.next_car_on_channel
+                            cur.channel_ptr.remove_car(cur)
+                            cur = temp
+                        #否则正常行驶
                         else:
+                            dis_max = cur.position + cur.speed_now
+                            cur.vruntime = cur.vruntime + cur.speed_now / cur.speed_now * speed_mul
+                            cur.position = dis_max
                             cur.time_out = 1
+                        if cur == None:
+                            break
+                    #若不在目的道路上
                     else:
                         dis_max = cur.position + cur.speed_now
                         #最大可移动距离是否超出道路
                         #若未超出，更新虚拟运行时间vruntime，当前位置position，时间耗尽标志位time_out
                         if dis_max <= cur.from_ptr.length:
-                            cur.vruntime = cur.vruntime + cur.speed_now / speed * speed_mul
+                            cur.vruntime = cur.vruntime + cur.speed_now / cur.speed_now * speed_mul
                             cur.position = cur.position + cur.speed_now
                             cur.time_out = 1
                         #若已超出，记录切换road之前进过多少距离，所花费的vruntime
                         else:
                             dis_before_switch = cur.from_ptr.length - cur.position
-                            vruntime_before_switch = dis_before_switch / speed * speed_mul
+                            vruntime_before_switch = dis_before_switch / cur.speed_now * speed_mul
                             #选择目标road上可进入的channel，根据channel中最后一辆车的postition判断是否还有位置
                             channel_switch = cur.to_ptr.channel_ptr
                             while channel_switch != None:
@@ -176,27 +170,30 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
     #安排车辆出库
     cur = in_gara_car_list.head
     while cur != None:
-        #找到目标道路上和可进入车道
-        channel_on = cur.from_ptr.channel_ptr
-        while channel_on != None:
-            if channel_on.position < 1:
-                channel_on = channel_on.channel_next
+        if cur.set_time <= set_time:
+            #找到目标道路上和可进入车道
+            channel_on = cur.from_ptr.channel_ptr
+            while channel_on != None:
+                if channel_on.position < 1:
+                    channel_on = channel_on.channel_next
+                else:
+                    break
+            if channel_on:
+                cur.channel_ptr = channel_on
+                cur.channel = channel_on.id
+                channel_on.speed = min(cur.speed, channel_on.speed)
+                cur.speed_now = min (cur.speed, channel_on.speed)
+                cur.position = max(1, min(channel_on.position, channel_on.speed))
+                cur.vruntime = vruntime + cur.position/cur.speed_now*speed_mul
+                channel_on.position = cur.position - 1
+                cur.on_road =1
+                channel_on.append_car(cur)
+                in_gara_car_list.remove(cur.id)
+                temp = cur.car_next
+                car_run_list.append(cur)
+                cur = temp
             else:
-                break
-        if channel_on:
-            cur.channel_ptr = channel_on
-            cur.channel = channel_on.id
-            channel_on.speed = min(cur.speed, channel_on.speed)
-            cur.speed_now = min (cur.speed, channel_on.speed)
-            cur.position = max(1, min(channel_on.position, channel_on.speed))
-            cur.vruntime = vruntime + cur.position/cur.speed_now*speed_mul
-            channel_on.position = cur.position - 1
-            cur.on_road =1
-            channel_on.append_car(cur)
-            in_gara_car_list.remove(cur.id)
-            temp = cur.car_next
-            car_run_list.append(cur)
-            cur = temp
+                cur = cur.car_next
         else:
             cur = cur.car_next
     #打印测试用
@@ -205,7 +202,7 @@ def schedule_running_cars(car_run_list, road_list, cross_list, set_time):
         if cur == None:
             print('no car', ' ')
         while cur != None:
-            print(cur.id, cur.position, cur.vruntime, cur.channel_ptr, cur.prev_car_on_channel, cur)
+            print(cur.id, cur.position)#, cur.vruntime, cur.channel_ptr, cur.prev_car_on_channel, cur)
             cur = cur.car_next
         print('running...')
         cur = in_gara_car_list.head

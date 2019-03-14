@@ -5,13 +5,14 @@ class car_node(object):
         self.leave = 5000  #data[1]    #departure
         self.arrive = 5001  #data[2]   #destination
         self.speed = 5  #data[3]    #highest speed
-        self.set_time = 1   #data[4]   #time set to start moving
+        self.set_time = 1#data[4]   #time set to start moving
         #info need
         self.position = 0   #at the position on channel now
         self.channel = 0    #on the channel on road now
         self.speed_now = 0  #speed to move now
         self.on_road = 0  #1 means on road while 0 refers to in garage
         self.vruntime = 0  #vitural running time
+        self.arrive_time = 0
         self.dir = 0  # straight 1 turn left 2 turn right 3
         self.time_out = 0
         self.nowhere = 0
