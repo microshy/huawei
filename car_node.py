@@ -4,8 +4,8 @@ class car_node(object):
         self.id = data[0]   #car id
         self.leave = 5000  #data[1]    #departure
         self.arrive = 5001  #data[2]   #destination
-        self.speed = 5  #data[3]    #highest speed
-        self.set_time = 1#data[4]   #time set to start moving
+        self.speed = data[3]    #highest speed
+        self.set_time = data[4]   #time set to start moving
         #info need
         self.position = 0   #at the position on channel now
         self.channel = 0    #on the channel on road now

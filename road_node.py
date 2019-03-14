@@ -26,11 +26,13 @@ class road_node(object):
                 channelx = channel_node.channel_node(i+1, self.length)
                 if self.channel_ptr == None:
                     self.channel_ptr = channelx
+                    channelx.speed = self.speed
                 else:
                     cur = self.channel_ptr
                     while cur.channel_next != None:
                         cur = cur.channel_next
                     cur.channel_next = channelx
+                    channelx.speed = self.speed
     #遍历道路的channel
     def travel_channel(self):
         cur = self.channel_ptr
