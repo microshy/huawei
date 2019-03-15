@@ -32,6 +32,7 @@ def main():
     '''
     cross_list.link(road_list)
     car_wait_list.link(road_list)
+    car_wait_list.dir()
     #3 开始调度
     print('start schedule...')
     set_time = 0
